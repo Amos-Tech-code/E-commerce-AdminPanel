@@ -64,34 +64,36 @@ include('../includes/connect.php');
                 </thead>
                 
                 <tbody>
-                    <?php
-                    global $con;
-                    $get_users = "SELECT * FROM user_table";
-                    $result = mysqli_query($con, $get_users);
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        $user_id = $row['user_id'];
-                        $username = $row['username'];
-                        $user_email = $row['user_email'];
-                        $user_address = $row['user_address'];
-                        $user_mobile = $row['user_mobile'];
-                    ?>
-                        <tr class="text-center">
-                            <td><?php echo $user_id; ?></td>
-                            <td><?php echo $username; ?></td>
-                            <td><?php echo $user_email; ?></td>
-                            <td><?php echo $user_address; ?></td>
-                            <td><?php echo $user_mobile; ?></td>
+                <?php
+                        global $con;
+                        $get_users = "SELECT * FROM user_table";
+                        $result = mysqli_query($con, $get_users);
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            // Check if each column exists in the row and set to NULL if it doesn't
+                            $user_id = isset($row['user_id']) ? $row['user_id'] : 'NULL';
+                            $username = isset($row['username']) ? $row['username'] : 'NULL';
+                            $user_email = isset($row['user_email']) ? $row['user_email'] : 'NULL';
+                            $user_address = isset($row['user_address']) ? $row['user_address'] : 'NULL';
+                            $user_mobile = isset($row['user_mobile']) ? $row['user_mobile'] : 'NULL';
+                        ?>
+                            <tr class="text-center">
+                                <td><?php echo $user_id; ?></td>
+                                <td><?php echo $username; ?></td>
+                                <td><?php echo $user_email; ?></td>
+                                <td><?php echo $user_address; ?></td>
+                                <td><?php echo $user_mobile; ?></td>
+                                
+                                <!-- Delete link triggers the modal -->
+                                <td>
+                                    <a class="text-danger" href="#" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeleteUrl('dashboard.php?delete_user=<?php echo $user_id; ?>')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php
+                        }
+                        ?>
 
-                            <!-- Delete link triggers the modal -->
-                            <td>
-                                <a class="text-danger" href="#" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeleteUrl('dashboard.php?delete_user=<?php echo $user_id; ?>')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <?php
-                    }
-                    ?>
                 </tbody>
             </table>
         </div>
