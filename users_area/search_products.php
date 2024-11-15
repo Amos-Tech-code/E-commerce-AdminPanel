@@ -1,14 +1,33 @@
 <?php
 require_once("../includes/connect.php");
 require_once("../includes/helper_classes.php");
+
+
 function search_products(){
     global $con;
     $response = array();
     $result = new Result();
 
     if(isset($_GET['search_data_product'])){
-        $search_data_value = $_GET['search_data_product'];
-        $search_query = "SELECT * FROM products WHERE Product_keyword LIKE '%$search_data_value%'";
+        // Get the search term and split it into individual keywords
+        $search_data_value = mysqli_real_escape_string($con, $_GET['search_data_product']);
+        $keywords = explode(' ', $search_data_value); // Split the search term by spaces
+
+        // Create a dynamic query using LIKE clauses for each keyword across multiple fields
+        $search_query = "SELECT * FROM products WHERE";
+        $search_conditions = array();
+
+        // Adding conditions for each keyword to search across multiple fields (title, description, keywords)
+        foreach ($keywords as $keyword) {
+            $search_conditions[] = " product_title LIKE '%$keyword%' 
+                                    OR product_description LIKE '%$keyword%' 
+                                    OR Product_keyword LIKE '%$keyword%'";
+        }
+
+        // Combine all conditions with OR operators
+        $search_query .= implode(' OR ', $search_conditions);
+
+        // Execute the query
         $result_query = mysqli_query($con, $search_query);
         $num_of_row = mysqli_num_rows($result_query);
 
@@ -44,4 +63,5 @@ function search_products(){
 
     echo json_encode($response);
 }
+        search_products();
 ?>

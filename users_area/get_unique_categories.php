@@ -24,7 +24,9 @@ function get_unique_categories() {
                     'product_title' => $row['product_title'],
                     'product_description' => $row['product_description'],
                     'product_image' => './admin-area/product_images/' . $row['product_image1'],
-                    'product_price' => $row['product_price']
+                    'product_price' => $row['product_price'],
+                    'category_id' => $row['category_id'],
+                    'brand_id' => $row['brand_id'],
                 );
             }
             $result->setErrorStatus(false);
@@ -42,4 +44,5 @@ function get_unique_categories() {
 
     echo json_encode($response);
 }
+    get_unique_categories();
 ?>

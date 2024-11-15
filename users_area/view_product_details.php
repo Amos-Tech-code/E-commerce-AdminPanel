@@ -61,4 +61,5 @@ function view_details(){
     // Send the JSON response
     echo json_encode($response);
 }
+    view_details()
 ?>

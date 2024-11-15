@@ -39,4 +39,5 @@ function get_all_products() {
 
     echo json_encode($response);
 }
+    get_all_products()
 ?>

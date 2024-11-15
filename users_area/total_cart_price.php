@@ -48,4 +48,5 @@ function total_cart_price(){
 
     echo json_encode($response);
 }
+    total_cart_price()
 ?>

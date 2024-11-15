@@ -10,7 +10,7 @@ if (!empty($_POST['email']) && !empty($_POST['token'])) {
     $email = $_POST['email'];
     $token = $_POST['token'];
 
-    $stmt = $conn->prepare("SELECT user_password FROM user_table WHERE user_email=?");
+    $stmt = $con->prepare("SELECT user_password FROM user_table WHERE user_email=?");
     $stmt->bind_param("s",$email);
     $stmt->execute();
     $stmt->store_result();
@@ -19,7 +19,7 @@ if (!empty($_POST['email']) && !empty($_POST['token'])) {
     $rows = $stmt->num_rows;
     $stmt->close();
     if($rows>0) {
-        $stmt = $conn->prepare("SELECT token FROM user_table WHERE user_email=?");
+        $stmt = $con->prepare("SELECT token FROM user_table WHERE user_email=?");
         $stmt->bind_param("s",$email);
         $stmt->execute();
         $stmt->store_result();
@@ -27,7 +27,7 @@ if (!empty($_POST['email']) && !empty($_POST['token'])) {
         $stmt->fetch();
         $stmt->close();
         if ($savedToken == $token) {
-            $stmt = $conn->prepare("SELECT username FROM user_table WHERE user_email=?");
+            $stmt = $con->prepare("SELECT username FROM user_table WHERE user_email=?");
             $stmt->bind_param("s",$email);
             $stmt->execute();
             $stmt->store_result();
