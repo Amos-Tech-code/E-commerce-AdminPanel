@@ -17,7 +17,7 @@ $product_count = $product_result ? mysqli_fetch_array($product_result)['total'] 
 $user_result = mysqli_query($con, "SELECT COUNT(*) AS total FROM user_table");
 $user_count = $user_result ? mysqli_fetch_array($user_result)['total'] : 0;
 
-$order_result = mysqli_query($con, "SELECT COUNT(*) AS total FROM orders_pending");
+$order_result = mysqli_query($con, "SELECT COUNT(*) AS total FROM orders");
 $order_count = $order_result ? mysqli_fetch_array($order_result)['total'] : 0;
 
 $brand_result = mysqli_query($con, "SELECT COUNT(*) AS total FROM brands");
@@ -29,7 +29,7 @@ $category_count = $category_result ? mysqli_fetch_array($category_result)['total
 
 // Fetch monthly order data for the chart
 $order_data_query = "SELECT DATE_FORMAT(order_date, '%Y-%m') AS month, COUNT(*) AS order_count
-                     FROM user_orders
+                     FROM orders
                      WHERE order_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                      GROUP BY month
                      ORDER BY month";

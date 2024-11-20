@@ -5,6 +5,8 @@ function get_unique_categories() {
     global $con;
     $response = array();
     $result = new Result();
+ // Add Content-Type header
+    header('Content-Type: application/json; charset=utf-8');
 
     if (isset($_GET['category'])) {
         $category_id = $_GET['category'];

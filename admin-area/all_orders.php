@@ -83,7 +83,7 @@ include('../includes/connect.php');
                 <tbody>
                     <?php
                     global $con;
-                    $get_orders = "SELECT * FROM orders_pending";
+                    $get_orders = "SELECT * FROM orders";
                     $result = mysqli_query($con, $get_orders);
                     while ($row = mysqli_fetch_assoc($result)) {
                         $order_id = $row['order_id'];

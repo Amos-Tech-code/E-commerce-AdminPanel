@@ -140,7 +140,7 @@ $result = mysqli_query($con, $filter_query);*/
                             <td><?php echo $product_price; ?>/-</td>
                             <td>
                                 <?php
-                                    $get_count = "SELECT * FROM orders_pending WHERE product_id = $product_id";
+                                    $get_count = "SELECT * FROM orders WHERE product_id = $product_id";
                                     $result_count = mysqli_query($con, $get_count);
                                     echo mysqli_num_rows($result_count);
                                 ?>
