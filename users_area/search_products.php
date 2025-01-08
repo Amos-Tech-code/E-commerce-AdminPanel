@@ -2,11 +2,13 @@
 require_once("../includes/connect.php");
 require_once("../includes/helper_classes.php");
 
-
 function search_products(){
     global $con;
     $response = array();
     $result = new Result();
+
+    // Add Content-Type header
+    header('Content-Type: application/json; charset=utf-8');
 
     if(isset($_GET['search_data_product'])){
         // Get the search term and split it into individual keywords
@@ -44,7 +46,9 @@ function search_products(){
                     'product_title' => $row['product_title'],
                     'product_description' => $row['product_description'],
                     'product_image' => './admin-area/product_images/' . $row['product_image1'],
-                    'product_price' => $row['product_price']
+                    'product_price' => $row['product_price'],
+                    'category_id' => $row['category_id'],
+                    'brand_id' => $row['brand_id']
                 );
             }
             $result->setErrorStatus(false);
@@ -63,5 +67,6 @@ function search_products(){
 
     echo json_encode($response);
 }
-        search_products();
+
+search_products();
 ?>

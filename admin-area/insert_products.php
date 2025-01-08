@@ -51,11 +51,11 @@ if(isset($_POST['insert_product'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insert Products</title>
-    <!-- bootstrap css link -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- font awesome -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
@@ -73,121 +73,96 @@ if(isset($_POST['insert_product'])){
             font-weight: bold;
             color: #4caf50;
         }
-        .form-outline {
-            margin-bottom: 20px;
-        }
-        .form-label {
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .form-control {
-            border-radius: 6px;
-            padding: 12px;
-        }
-        .form-select {
-            border-radius: 6px;
-            padding: 12px;
-        }
-        .btn {
-            font-size: 16px;
-            padding: 10px 20px;
-            border-radius: 6px;
-            width: 100%;
-        }
-        .btn-secondary {
-            background-color: #17a2b8;
-            border: none;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #138496;
-        }
         .toast-container {
-            position: absolute;
+            position: fixed;
             top: 20px;
             right: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container mt-4">
         <h1 class="text-center mb-4">Insert Product</h1>
         <form action="" method="post" enctype="multipart/form-data">
-            <!-- Product Title -->
-            <div class="form-outline w-50 m-auto">
-                <label for="product_title" class="form-label">Product Title</label>
-                <input type="text" name="product_title" id="product_title" class="form-control" placeholder="Enter product title" autocomplete="off" required>
-            </div>
+            <div class="row g-3">
+                <!-- Product Title -->
+                <div class="col-md-6">
+                    <label for="product_title" class="form-label">Product Title</label>
+                    <input type="text" name="product_title" id="product_title" class="form-control" placeholder="Enter product title" autocomplete="off" required>
+                </div>
 
-            <!-- Product Description -->
-            <div class="form-outline w-50 m-auto">
-                <label for="description" class="form-label">Product Description</label>
-                <input type="text" name="description" id="description" class="form-control" placeholder="Enter product description" autocomplete="off" required>
-            </div>
+                <!-- Product Description -->
+                <div class="col-md-6">
+                    <label for="description" class="form-label">Product Description</label>
+                    <input type="text" name="description" id="description" class="form-control" placeholder="Enter product description" autocomplete="off" required>
+                </div>
 
-            <!-- Product Keywords -->
-            <div class="form-outline w-50 m-auto mb-3">
-                <label for="product_keywords" class="form-label">Product Keywords</label>
-                <input type="text" name="Product_keywords" id="product_keywords" class="form-control" placeholder="Enter product keywords" autocomplete="off" required>
-            </div>
+                <!-- Product Keywords -->
+                <div class="col-md-6">
+                    <label for="product_keywords" class="form-label">Product Keywords</label>
+                    <input type="text" name="Product_keywords" id="product_keywords" class="form-control" placeholder="Enter product keywords" autocomplete="off" required>
+                </div>
 
-            <!-- Category -->
-            <div class="form-outline w-50 m-auto mb-3">
-                <select name="product_category" class="form-select" required>
-                    <option value="">Select Category</option>
-                    <?php
-                    $select_query = "SELECT * FROM categories";
-                    $result_query = mysqli_query($con, $select_query);
-                    while ($row = mysqli_fetch_assoc($result_query)) {
-                        echo "<option value='" . $row['category_id'] . "'>" . $row['category_title'] . "</option>";
-                    }
-                    ?>
-                </select>
-            </div>
+                <!-- Category -->
+                <div class="col-md-6">
+                    <label for="product_category" class="form-label">Category</label>
+                    <select name="product_category" id="product_category" class="form-select" required>
+                        <option value="">Select Category</option>
+                        <?php
+                        $select_query = "SELECT * FROM categories";
+                        $result_query = mysqli_query($con, $select_query);
+                        while ($row = mysqli_fetch_assoc($result_query)) {
+                            echo "<option value='" . $row['category_id'] . "'>" . $row['category_title'] . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
 
-            <!-- Brand -->
-            <div class="form-outline w-50 m-auto">
-                <select name="product_brands" class="form-select" required>
-                    <option value="">Select Brand</option>
-                    <?php
-                    $select_query = "SELECT * FROM brands";
-                    $result_query = mysqli_query($con, $select_query);
-                    while ($row = mysqli_fetch_assoc($result_query)) {
-                        echo "<option value='" . $row['brand_id'] . "'>" . $row['brand_title'] . "</option>";
-                    }
-                    ?>
-                </select>
-            </div>
+                <!-- Brand -->
+                <div class="col-md-6">
+                    <label for="product_brands" class="form-label">Brand</label>
+                    <select name="product_brands" id="product_brands" class="form-select" required>
+                        <option value="">Select Brand</option>
+                        <?php
+                        $select_query = "SELECT * FROM brands";
+                        $result_query = mysqli_query($con, $select_query);
+                        while ($row = mysqli_fetch_assoc($result_query)) {
+                            echo "<option value='" . $row['brand_id'] . "'>" . $row['brand_title'] . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
 
-            <!-- Product Images -->
-            <div class="form-outline w-50 m-auto">
-                <label for="product_image1" class="form-label">Product Image 1</label>
-                <input type="file" name="product_image1" id="product_image1" class="form-control" required>
-            </div>
-            <div class="form-outline w-50 m-auto">
-                <label for="product_image2" class="form-label">Product Image 2</label>
-                <input type="file" name="product_image2" id="product_image2" class="form-control" required>
-            </div>
-            <div class="form-outline w-50 m-auto">
-                <label for="product_image3" class="form-label">Product Image 3</label>
-                <input type="file" name="product_image3" id="product_image3" class="form-control" required>
-            </div>
+                <!-- Product Images -->
+                <div class="col-md-4">
+                    <label for="product_image1" class="form-label">Product Image 1</label>
+                    <input type="file" name="product_image1" id="product_image1" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="product_image2" class="form-label">Product Image 2</label>
+                    <input type="file" name="product_image2" id="product_image2" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="product_image3" class="form-label">Product Image 3</label>
+                    <input type="file" name="product_image3" id="product_image3" class="form-control">
+                </div>
 
-            <!-- Product Price -->
-            <div class="form-outline w-50 m-auto mb-3">
-                <label for="product_price" class="form-label">Product Price</label>
-                <input type="text" name="product_price" id="product_price" class="form-control" placeholder="Enter product price" autocomplete="off" required>
-            </div>
+                <!-- Product Price -->
+                <div class="col-md-6">
+                    <label for="product_price" class="form-label">Product Price</label>
+                    <input type="text" name="product_price" id="product_price" class="form-control" placeholder="Enter product price" autocomplete="off" required>
+                </div>
 
-            <!-- Product Quantity -->
-            <div class="form-outline w-50 m-auto mb-3">
-                <label for="product_quantity" class="form-label">Product Quantity</label>
-                <input type="number" name="product_quantity" id="product_quantity" class="form-control" placeholder="Enter quantity in stock" autocomplete="off" required>
-            </div>
+                <!-- Product Quantity -->
+                <div class="col-md-6">
+                    <label for="product_quantity" class="form-label">Product Quantity</label>
+                    <input type="number" name="product_quantity" id="product_quantity" class="form-control" placeholder="Enter quantity in stock" autocomplete="off" required>
+                </div>
 
-            <!-- Submit Button -->
-            <div class="form-outline w-50 m-auto">
-                <input type="submit" name="insert_product" class="btn btn-secondary" value="Insert Product">
+                <!-- Submit Button -->
+                <div class="col-md-12">
+                    <button type="submit" name="insert_product" class="btn btn-secondary w-100">Insert Product</button>
+                </div>
             </div>
         </form>
     </div>

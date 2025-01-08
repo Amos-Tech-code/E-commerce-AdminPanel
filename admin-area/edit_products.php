@@ -195,6 +195,16 @@ if (isset($_POST['edit_product'])) {
     }
 
     // Query to update the product
+    // Escape special characters in input values
+    $product_title = mysqli_real_escape_string($con, $product_title);
+    $product_description = mysqli_real_escape_string($con, $product_description);
+    $product_keyword = mysqli_real_escape_string($con, $product_keyword);
+    $product_category = mysqli_real_escape_string($con, $product_category);
+    $product_brand = mysqli_real_escape_string($con, $product_brand);
+    $product_price = mysqli_real_escape_string($con, $product_price);
+    $product_quantity = mysqli_real_escape_string($con, $product_quantity);
+
+    // Query to update the product
     $update_product = "UPDATE products SET 
         product_title='$product_title',
         product_description='$product_description',

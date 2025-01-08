@@ -46,18 +46,22 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
             $response['user']['auth_token'] = $authToken;
 
             $result->setErrorStatus(false);
-            $result->setMessage("login successful");
+            $result->setMessage("Login was successful.");
         } else {
             $result->setErrorStatus(true);
-            $result->setMessage("Invalid credentials");
+            $result->setMessage("The password you entered is incorrect. Please try again.");
         }
     } else {
         $result->setErrorStatus(true);
-        $result->setMessage("Invalid credentials");
+        $result->setMessage("No account found with the email address $email. Please check your email or register.");
     }
 } else {
+    $missingParams = [];
+    if (empty($_POST['email'])) $missingParams[] = "email";
+    if (empty($_POST['password'])) $missingParams[] = "password";
+    $missingFields = implode(" and ", $missingParams);
     $result->setErrorStatus(true);
-    $result->setMessage("insufficient parameters");
+    $result->setMessage("Please provide your $missingFields to proceed.");
 }
 
 $response['result']['error'] = $result->isError();

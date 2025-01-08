@@ -11,7 +11,8 @@ if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {
 
     // Fetch all cart items for the user and calculate the total amount
     $cart_query = "
-        SELECT cd.product_id, cd.quantity, p.product_price 
+        SELECT cd.cart_id, cd.product_id, cd.quantity, 
+               p.product_title, p.product_image1, p.product_price 
         FROM cart_details cd 
         JOIN products p ON cd.product_id = p.product_id 
         WHERE cd.user_id = ?";
@@ -23,11 +24,28 @@ if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {
     if ($cart_items->num_rows > 0) {
         // Calculate total amount from the cart
         $total_amount = 0;
+        $items = [];
 
         while ($row = $cart_items->fetch_assoc()) {
+            $cart_id = intval($row['cart_id']);
+            $product_id = intval($row['product_id']);
             $quantity = intval($row['quantity']);
-            $price = floatval($row['product_price']);
-            $total_amount += $quantity * $price;
+            $product_price = floatval($row['product_price']);
+            $product_title = $row['product_title'];
+            $product_image = $row['product_image1'];
+
+            // Add the item's total to the total amount
+            $total_amount += $quantity * $product_price;
+
+            // Add item details to the items array
+            $items[] = [
+                "cart_id" => $cart_id,
+                "product_id" => $product_id,
+                "product_image" => $product_image,
+                "product_name" => $product_title,
+                "product_price" => number_format($product_price, 2),
+                "quantity" => $quantity
+            ];
         }
 
         // Fetch tax, shipping, and discount values from ordercharges table
@@ -48,10 +66,11 @@ if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {
             $response['message'] = "Cart summary fetched successfully.";
             $response['data'] = [
                 'amount' => number_format($total_amount, 2),
+                'discount' => number_format($discount, 2),
                 'shipping' => number_format($shipping, 2),
                 'tax' => number_format($tax, 2),
-                'discount' => number_format($discount, 2),
-                'subtotal' => number_format($subtotal, 2)
+                'subtotal' => number_format($subtotal, 2),
+                'items' => $items
             ];
         } else {
             $result->setErrorStatus(true);
@@ -73,7 +92,7 @@ if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {
     $response['error'] = $result->isError();
     $response['message'] = $result->getMessage();
 }
-    // Return the response
-    echo json_encode($response);
 
+// Return the response
+echo json_encode($response);
 ?>

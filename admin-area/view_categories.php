@@ -97,7 +97,7 @@
     <h3 class="text-center">All Categories</h3>
 
     <!-- Table Container -->
-    <div class="table-container">
+    <div class="table-container table-responsive">
         <table class="table table-bordered table-hover">
             <thead class="text-center">
                 <tr>
@@ -109,7 +109,7 @@
             </thead>
             <tbody>
                 <?php
-                $select_category = "select * from categories";
+                $select_category = "SELECT * FROM categories";
                 $result = mysqli_query($con, $select_category);
                 $number = 0;
                 while ($row = mysqli_fetch_assoc($result)) {
@@ -121,16 +121,30 @@
                         <td><?php echo $number; ?></td>
                         <td><?php echo $category_title; ?></td>
                         <td>
-                           <!-- Edit Button with Bootstrap Classes -->
-                           <a class="btn btn-info text-white" href="dashboard.php?edit_categories=<?php echo $category_id; ?>">
-                                <i class="fas fa-pen-square"></i> Edit
-                            </a>
+                            <?php if ($number > 3): ?>
+                                <!-- Edit Button -->
+                                <a class="btn btn-info text-white" href="dashboard.php?edit_categories=<?php echo $category_id; ?>">
+                                    <i class="fas fa-pen-square"></i> Edit
+                                </a>
+                            <?php else: ?>
+                                <!-- Disabled Edit Button -->
+                                <button class="btn btn-info text-white" disabled>
+                                    <i class="fas fa-pen-square"></i> Edit
+                                </button>
+                            <?php endif; ?>
                         </td>
                         <td>
-                            <!-- Trigger modal for delete confirmation -->
-                            <a class="icon-link" href="#" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeleteUrl('dashboard.php?delete_category=<?php echo $category_id; ?>')">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
+                            <?php if ($number > 3): ?>
+                                <!-- Delete Link -->
+                                <a class="icon-link" href="#" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeleteUrl('dashboard.php?delete_category=<?php echo $category_id; ?>')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            <?php else: ?>
+                                <!-- Disabled Delete Button -->
+                                <button class="btn btn-danger" disabled>
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -138,6 +152,7 @@
         </table>
     </div>
 </div>
+
 
 <!-- Bootstrap Modal for Delete Confirmation -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">

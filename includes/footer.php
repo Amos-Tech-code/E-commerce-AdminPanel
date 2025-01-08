@@ -1,5 +1,5 @@
 <div class="bg-muted p-3 text-center border rounded">
-    <h3 class="mb-3">All rights reserved by @Backyard Shoez</h3>
+    <h3 class="mb-3">All rights reserved by @Backyard E-Shopp</h3>
     <div class="d-flex">
         <div class="col-3">
         <h4>About Us</h4>

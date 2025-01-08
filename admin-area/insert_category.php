@@ -1,26 +1,34 @@
 <?php
 
 include('../includes/connect.php');
-if(isset($_POST['insert_cat'])){
-  $category_title=$_POST['cat_title'];
 
-  //select data from database
-  $select_query="select *from categories where category_title='$category_title'";
-  $result_select=mysqli_query($con,$select_query);
-  $number=mysqli_num_rows($result_select);
-  if($number>0){
-    $toast_message = 'This is present inside the database';
+if(isset($_POST['insert_cat'])){
+  // Escape special characters in category title
+  $category_title = mysqli_real_escape_string($con, $_POST['cat_title']);
+
+  // Check if the category already exists
+  $select_query = "SELECT * FROM categories WHERE category_title='$category_title'";
+  $result_select = mysqli_query($con, $select_query);
+  $number = mysqli_num_rows($result_select);
+
+  if ($number > 0) {
+    $toast_message = 'This category is already present in the database';
     $toast_class = 'text-bg-danger';
-  }
-  else {
-  $insert_query="insert into categories (category_title) values ('$category_title')";
-  $result=mysqli_query($con,$insert_query);
-  if($result){
-    $toast_message = 'Category has been inserted successfully';
-    $toast_class = 'text-bg-success';
-  }
+  } else {
+    // Insert the new category
+    $insert_query = "INSERT INTO categories (category_title) VALUES ('$category_title')";
+    $result = mysqli_query($con, $insert_query);
+
+    if ($result) {
+      $toast_message = 'Category has been inserted successfully';
+      $toast_class = 'text-bg-success';
+    } else {
+      $toast_message = 'Failed to insert category';
+      $toast_class = 'text-bg-danger';
+    }
   }
 }
+
 
 ?>
 

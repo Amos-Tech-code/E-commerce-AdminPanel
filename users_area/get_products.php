@@ -1,7 +1,4 @@
 <?php
-//ini_set('display_errors', 1);
-//error_reporting(E_ALL);
-
 require_once("../includes/connect.php");
 require_once("../includes/helper_classes.php");
 
@@ -11,20 +8,23 @@ function getproducts() {
     $response = array();
     $result = new Result();
 
-    // Test the database connection
-    /*if (!$con) {
-        die("Database connection failed: " . mysqli_connect_error());
-    } else {
-        echo "Database connection successful.\n";  // Debugging log
-    }*/
+    // Define limit for the number of products
+    $limit = 20; // Adjust the limit as per your requirements
 
-    // Prepare the query to select products
-    $select_query = "SELECT product_id, product_title, product_description, product_image1, product_price, category_id, brand_id FROM products";
-    //echo "Preparing query: $select_query\n";  // Debugging log
+    // Prepare the query to select products with additional conditions and randomization
+    $select_query = "
+        SELECT product_id, product_title, product_description, product_image1, product_price, category_id, brand_id
+        FROM products
+        WHERE status = 1
+          AND category_id NOT IN (1, 2, 3)
+        ORDER BY RAND()
+        LIMIT ?
+    ";
 
     // Execute query and check if statement preparation is successful
     if ($stmt = $con->prepare($select_query)) {
-       // echo "Query preparation successful.\n";  // Debugging log
+        // Bind the limit as a parameter
+        $stmt->bind_param("i", $limit);
 
         // Execute the statement
         $stmt->execute();
@@ -32,7 +32,6 @@ function getproducts() {
 
         // Check if products are found
         if ($stmt->num_rows > 0) {
-            //echo "Number of products found: " . $stmt->num_rows . "\n";  // Debugging log
 
             $products = array();
             $stmt->bind_result($product_id, $product_title, $product_description, $product_image1, $product_price, $category_id, $brand_id);
@@ -53,7 +52,6 @@ function getproducts() {
             $result->setMessage("Products retrieved successfully.");
             $response['products'] = $products;
         } else {
-            echo "No products found.\n";  // Debugging log
             $result->setErrorStatus(true);
             $result->setMessage("No products found.");
             $response['products'] = array();
@@ -61,7 +59,6 @@ function getproducts() {
 
         $stmt->close();
     } else {
-        //echo "Failed to prepare query: " . $con->error . "\n";  // Detailed error log
         $result->setErrorStatus(true);
         $result->setMessage("Query preparation failed.");
         $response['products'] = array();

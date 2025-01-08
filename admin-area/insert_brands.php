@@ -1,27 +1,34 @@
 <?php
-
 include('../includes/connect.php');
-if(isset($_POST['insert_brand'])){
-  $brand_title=$_POST['brand_title'];
 
-  //select data from database
-  $select_query="select *from brands where brand_title='$brand_title'";
-  $result_select=mysqli_query($con,$select_query);
-  $number=mysqli_num_rows($result_select);
-  if($number>0){
-    $toast_message = 'This is present inside the database';
+if(isset($_POST['insert_brand'])){
+  // Escape special characters in brand title
+  $brand_title = mysqli_real_escape_string($con, $_POST['brand_title']);
+
+  // Select data from the database
+  $select_query = "SELECT * FROM brands WHERE brand_title='$brand_title'";
+  $result_select = mysqli_query($con, $select_query);
+  $number = mysqli_num_rows($result_select);
+
+  if ($number > 0) {
+    $toast_message = 'This brand is already present in the database';
     $toast_class = 'text-bg-danger';
-  }
-  else {
-  $insert_query="insert into brands (brand_title) values ('$brand_title')";
-  $result=mysqli_query($con,$insert_query);
-  if($result){
-    $toast_message = 'Brand has been inserted successfully';
-    $toast_class = 'text-bg-success';
-  }
+  } else {
+    // Insert the new brand
+    $insert_query = "INSERT INTO brands (brand_title) VALUES ('$brand_title')";
+    $result = mysqli_query($con, $insert_query);
+
+    if ($result) {
+      $toast_message = 'Brand has been inserted successfully';
+      $toast_class = 'text-bg-success';
+    } else {
+      $toast_message = 'Failed to insert brand';
+      $toast_class = 'text-bg-danger';
+    }
   }
 }
 ?>
+
 
 
 <!DOCTYPE html>

@@ -121,8 +121,11 @@ if (isset($_POST['admin_login'])) {
     if ($row_count > 0) {
         // Verify password securely
         if (password_verify($admin_password, $row_data['admin_password'])) {
+            // Retrieve admin_id from the query result
+            $adminId = $row_data['admin_id'];
             $_SESSION['admin_username'] = $admin_username;
             $_SESSION['username'] = $admin_username;
+            $_SESSION['admin_id'] = $adminId;
 
             // Successful login toast
             echo "<script>
@@ -132,7 +135,7 @@ if (isset($_POST['admin_login'])) {
                     var toast = new bootstrap.Toast(document.getElementById('toastMessage'));
                     toast.show();
                     setTimeout(function(){
-                        window.location.href = './dashboard.php';
+                        window.location.href = './dashboard';
                     }, 2000);
                   </script>";
         } else {

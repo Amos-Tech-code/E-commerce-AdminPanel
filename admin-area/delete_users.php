@@ -1,5 +1,5 @@
 <?php
-if (isset($_GET['delete_user'])) {
+    if (isset($_GET['delete_user'])) {
     $delete_id_user = $_GET['delete_user'];
 
     // Check if the user ID is numeric
@@ -9,7 +9,7 @@ if (isset($_GET['delete_user'])) {
     }
 
     // Check if there are any orders associated with this user
-    $check_orders = "SELECT * FROM user_orders WHERE user_id = $delete_id_user";
+    $check_orders = "SELECT * FROM orders WHERE userid = $delete_id_user";
     $result_orders = mysqli_query($con, $check_orders);
     
     if (mysqli_num_rows($result_orders) > 0) {

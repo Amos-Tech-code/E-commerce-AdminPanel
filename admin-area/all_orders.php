@@ -1,3 +1,4 @@
+
 <?php
 include('../includes/connect.php');
 ?>
@@ -27,7 +28,11 @@ include('../includes/connect.php');
             background-color: #e9ecef;
             border-radius: 10px;
             margin-bottom: 20px;
-        }
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
         .table thead {
             background-color: #17a2b8;
             color: #ffffff;
@@ -43,75 +48,92 @@ include('../includes/connect.php');
         <h1 class="text-center text-success mb-4">All Orders</h1>
 
         <!-- Filter Section -->
-        <div class="filter-row">
-            <form class="row g-3">
+        <!-- Order Table -->
+        <div class="filter-row mb-4">
+            <div class="row g-3">
                 <div class="col-md-4">
-                    <input type="text" name="order_id" class="form-control" placeholder="Filter by Order ID" />
+                    <input type="text" id="filterOrderId" class="form-control" placeholder="Filter by Order ID">
                 </div>
                 <div class="col-md-4">
-                    <input type="text" name="user_id" class="form-control" placeholder="Filter by User ID" />
+                    <input type="text" id="filterUserId" class="form-control" placeholder="Filter by User ID">
                 </div>
                 <div class="col-md-4">
-                    <select name="order_status" class="form-select">
+                    <select id="filterOrderStatus" class="form-select">
                         <option value="">Filter by Order Status</option>
                         <option value="pending">Pending</option>
-                        <option value="completed">Completed</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
-                </div>
-            </form>
+            </div>
         </div>
 
-        <!-- Order Table -->
-        <div class="table-container">
+        <div class="table-container table-responsive">
             <table class="table table-hover table-bordered">
                 <thead class="text-center">
                     <tr>
                         <th>Order Id</th>
                         <th>User Id</th>
                         <th>Invoice Number</th>
-                        <th>Product Id</th>
-                        <th>Quantity</th>
+                        <th>Total Amount</th>
                         <th>Order Status</th>
+                        <th>Product Details</th>
                         <th>User Details</th>
-                        <th>Mark as Complete</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                
                 <tbody>
                     <?php
                     global $con;
-                    $get_orders = "SELECT * FROM orders";
-                    $result = mysqli_query($con, $get_orders);
+
+                    $query = "
+                        SELECT o.order_id, o.userid, o.invoice_number, o.total_amount, o.order_status
+                        FROM orders o
+                        ORDER BY o.order_date DESC
+                    ";
+
+                    $result = mysqli_query($con, $query);
+
                     while ($row = mysqli_fetch_assoc($result)) {
                         $order_id = $row['order_id'];
                         $user_id = $row['userid'];
                         $invoice_number = $row['invoice_number'];
-                        $product_id = $row['product_id'];
-                        $quantity = $row['quantity'];
+                        $total_amount = $row['total_amount'];
                         $order_status = $row['order_status'];
                     ?>
-                        <tr class="text-center">
-                            <td><?php echo $order_id; ?></td>
+                        <tr 
+                            data-order-id="<?php echo $order_id; ?>" 
+                            data-user-id="<?php echo $user_id; ?>" 
+                            data-order-status="<?php echo strtolower($order_status); ?>" 
+                            class="text-center"
+                        >
+                            <td>#<?php echo $order_id; ?></td>
                             <td><?php echo $user_id; ?></td>
                             <td><?php echo $invoice_number; ?></td>
-                            <td><?php echo $product_id; ?></td>
-                            <td><?php echo $quantity; ?></td>
+                            <td>$<?php echo number_format($total_amount, 2); ?></td>
                             <td><?php echo ucfirst($order_status); ?></td>
                             <td>
-                                <a href="dashboard.php?view_user=<?php echo $user_id; ?>" class="btn btn-info btn-sm">
-                                    <i class="fas fa-user"></i> View
-                                </a>
+                                <button class="btn btn-primary btn-sm" onclick="viewOrderProducts(<?php echo $order_id; ?>)">
+                                    View Products
+                                </button>
                             </td>
                             <td>
-                                <?php if ($order_status != 'completed'): ?>
-                                    <a href="dashboard.php?complete_order=<?php echo $order_id; ?>" class="btn btn-success btn-sm">
+                                <button class="btn btn-info btn-sm" onclick="viewUserDetails(<?php echo $order_id; ?>)">
+                                    <i class="fas fa-user"></i> View
+                                </button>
+                            </td>
+                            <td>
+                                <?php if ($order_status != 'Delivered' && $order_status != 'Cancelled'): ?>
+                                    <button class="btn btn-success btn-sm" onclick="updateOrderStatus(<?php echo $order_id; ?>, 'Delivered')">
                                         Mark as Complete
-                                    </a>
-                                <?php else: ?>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(<?php echo $order_id; ?>, 'Cancelled')">
+                                        Cancel
+                                    </button>
+                                <?php elseif ($order_status == 'Delivered'): ?>
                                     <span class="text-success">Completed</span>
+                                <?php else: ?>
+                                    <span class="text-danger">Cancelled</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -121,7 +143,117 @@ include('../includes/connect.php');
                 </tbody>
             </table>
         </div>
-    </div>
+
+
+            <!-- Modals -->
+            <div id="productDetailsModal" class="modal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Product Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" id="productDetailsContent"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="userDetailsModal" class="modal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">User Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" id="userDetailsContent"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                </div>
+
+                <script>
+                    function viewOrderProducts(orderId) {
+                fetch(`fetch_order_products.php?order_id=${orderId}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('productDetailsContent').innerHTML = data;
+                        new bootstrap.Modal(document.getElementById('productDetailsModal')).show();
+                    });
+            }
+
+            function viewUserDetails(orderId) {
+                fetch(`fetch_user_details.php?order_id=${orderId}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('userDetailsContent').innerHTML = data;
+                        new bootstrap.Modal(document.getElementById('userDetailsModal')).show();
+                    });
+            }
+
+
+            function updateOrderStatus(orderId, status) {
+                if (confirm(`Are you sure you want to mark this order as ${status}?`)) {
+                    fetch(`update_order_status.php?order_id=${orderId}&status=${status}`)
+                        .then(response => response.text())
+                        .then(data => {
+                            alert(data);
+                            location.reload(); // Refresh the page to reflect changes
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Something went wrong!');
+                        });
+                }
+            }
+
+
+            </script>
+            
+            <!--Javascript funtion for filtering Orders-->
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const filterOrderId = document.getElementById('filterOrderId');
+                    const filterUserId = document.getElementById('filterUserId');
+                    const filterOrderStatus = document.getElementById('filterOrderStatus');
+                    const tableRows = document.querySelectorAll('tbody tr');
+
+                    function filterTable() {
+                        const orderIdValue = filterOrderId.value.trim().toLowerCase().replace('#', '');
+                        const userIdValue = filterUserId.value.trim().toLowerCase();
+                        const orderStatusValue = filterOrderStatus.value.trim().toLowerCase();
+
+                        tableRows.forEach(row => {
+                            const rowOrderId = row.dataset.orderId.toLowerCase();
+                            const rowUserId = row.dataset.userId.toLowerCase();
+                            const rowOrderStatus = row.dataset.orderStatus.toLowerCase();
+
+                            const matchesOrderId = orderIdValue === '' || rowOrderId.includes(orderIdValue);
+                            const matchesUserId = userIdValue === '' || rowUserId.includes(userIdValue);
+                            const matchesOrderStatus = orderStatusValue === '' || rowOrderStatus === orderStatusValue;
+
+                            if (matchesOrderId && matchesUserId && matchesOrderStatus) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    // Attach event listeners
+                    filterOrderId.addEventListener('input', filterTable);
+                    filterUserId.addEventListener('input', filterTable);
+                    filterOrderStatus.addEventListener('change', filterTable);
+                });
+            </script>
+
+
 
 </body>
 </html>

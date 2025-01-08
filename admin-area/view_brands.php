@@ -108,7 +108,7 @@
     <h3 class="text-center">All Brands</h3>
 
     <!-- Table Container -->
-    <div class="table-container">
+    <div class="table-container table-responsive">
         <table class="table table-bordered table-hover">
             <thead class="text-center">
                 <tr>

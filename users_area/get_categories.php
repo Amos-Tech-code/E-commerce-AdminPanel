@@ -2,16 +2,6 @@
 require_once("../includes/connect.php");
 require_once("../includes/helper_classes.php");
 
-// Enable error reporting
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
-
-// Check database connection
-/*if (!$con) {
-    die(json_encode(['error' => true, 'message' => 'Database connection failed']));
-}*/
-
 function getcategories() {
     global $con;
     $response = array();
